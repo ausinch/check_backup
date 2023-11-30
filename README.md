@@ -1,10 +1,12 @@
 # check_backup
-Nagios check.  
-On this server all backs create a one line status file in a status directory.\
+Nagios check of backup results
+On this server all backups create a one line status file in a status directory.\
 This check looks at that file,  Nagios displays the result.\
 For a green Ok status the file must contain **Success** and not be older than `warn_level`
 
 Below we see all backups were successful but 2 machines are in a critical state as the backups occured longer than parameter `crit_level`
+
+![Nagios_servers](pics/Nagios_servers.png)
 
 ![Nagios_backups](pics/Nagios_backups.png)
 
@@ -44,7 +46,12 @@ onsite = file to check\
 10080 = warn_level\
 20160 = crit_level
 
+in minutes.
+
 ## onsite file contence
 ~~~
 Success - Tue 28 Nov 15:38:34 CET 2023
 ~~~
+
+There is one file for each device backed up and for the BTRFS snaps
+
