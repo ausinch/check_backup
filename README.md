@@ -1,8 +1,8 @@
 # check_backup
 Nagios check.  
 On this server all backs create a one line status file in a status directory.\
-This check looks at that result,  Nagios displays the result.\
-For a green Ok status the file must contain **Success** and not be older than ẁarn_level`
+This check looks at that file,  Nagios displays the result.\
+For a green Ok status the file must contain **Success** and not be older than `warn_level`
 
 Below we see all backups were successful but 2 machines are in a critical state as the backups occured longer than parameter `crit_level`
 
@@ -36,10 +36,15 @@ Below we see all backups were successful but 2 machines are in a critical state 
 
 ~~~
 ### Break down
+~~~
 check_command check_backup!onsite!10080!20160 # Warn after 1 weeks. Critical after 2 weeks
-
+~~~
 Where:\
 onsite = file to check\
 10080 = warn_level\
 20160 = crit_level
 
+## onsite file contence
+~~~
+Success - Tue 28 Nov 15:38:34 CET 2023
+~~~
