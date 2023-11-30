@@ -1,0 +1,56 @@
+#!/bin/bash
+# Checks the backup status files age and status keywords and reports on them
+# Args: -H host (filename) -w warning -c critical time in hours. 
+# Chris Sullivan
+# r!date Sat  3 Apr 10:52:05 CEST 2021
+
+#  ---  Varables  ---
+status_dir="/usr/local/backup/status/"
+warn_level=720   # 12 hours
+crit_level=4320  # 3 days
+
+#  Get parameters
+while getopts H:w:c: opts; do
+    case ${opts} in
+        H) file_name=${OPTARG} ;;
+        w) warn_level=${OPTARG} ;;
+        c) crit_level=${OPTARG} ;;
+    esac
+done
+
+# does file exist? else exit UNKNOWN
+if [ -f $status_dir$file_name ];then
+    # find age of file in hours
+    file_secs=`stat -c %Z $status_dir$file_name`
+    now=`date +%s`
+    (( file_age = (now - file_secs)/60))
+else
+    echo "UNKNOWN - no status file"
+    exit 3
+fi
+
+# get contents of file
+file_content=`cat $status_dir$file_name`
+
+# Look for Failure then CRITICAL exit 2
+if [[ `fgrep Fail $status_dir$file_name` ]];then
+    echo "CRITICAL - $file_content"
+    exit 2
+fi
+    
+# Look for WARNING exit 1
+declare -i warn_level
+declare -i file_age
+if [[ $file_age -gt $warn_level ]];then
+    # Look for CRITICAL time based
+    if [[ $file_age -gt $crit_level ]];then
+        echo "CRITICAL - $file_content"
+        exit 2
+    fi
+    echo "WARNING - $file_content" # Age: $file_age $warn_level"
+    exit 1
+fi
+
+#  Its all good. OK exit 0
+echo "OK - $file_content"
+
